@@ -15,8 +15,8 @@ h1 {
     margin: 0 0 10px 0;
     font-size: 24px;
     letter-spacing: 2px;
-    color: #00f0ff;
-    text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    color: #b7e0ff;
+    text-shadow: 0 0 10px #b7e0ff66;
 }
 
 /* --- スタート画面（ガラスモーフィングスタイル） --- */
@@ -50,7 +50,7 @@ h1 {
 .menu-title {
     font-size: 28px;
     font-weight: bold;
-    background: linear-gradient(45deg, #00f0ff, #ff007f);
+    background: linear-gradient(45deg, #b7e0ff, #ff8ec8);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     margin-bottom: 30px;
@@ -73,9 +73,9 @@ h1 {
 }
 
 .menu-btn:hover {
-    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(255, 0, 127, 0.2));
-    border-color: #00f0ff;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    background: linear-gradient(135deg, rgba(#b7e0ff33, #ff8ec833));
+    border-color: #b7e0ff;
+    box-shadow: 0 0 15px #b7e0ff66;
     transform: translateY(-2px);
 }
 
@@ -127,8 +127,8 @@ h1 {
 }
 
 #mainCanvas {
-    border: 4px solid #00f0ff;
-    box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+    border: 4px solid #b7e0ff;
+    box-shadow: 0 0 15px #b7e0ff66;
     background-color: #050505;
     cursor: pointer;
 }
@@ -141,7 +141,7 @@ canvas {
 .score-display {
     font-size: 20px;
     font-weight: bold;
-    color: #ff007f;
+    color: #ff8ec8;
 }
 
 .controls {
@@ -163,7 +163,7 @@ button {
 
 button:hover {
     background: #555;
-    border-color: #00f0ff;
+    border-color: #b7e0ff;
 }
 
 #gameOverOverlay {
@@ -178,10 +178,10 @@ button:hover {
 }
 
 #gameOverOverlay h2 {
-    color: #ff3333;
+    color: #ff9933;
     font-size: 40px;
     margin-bottom: 20px;
-    text-shadow: 0 0 10px rgba(255,51,51,0.5);
+    text-shadow: 0 0 10px rgba(255,153,51,0.5);
 }
 
 /* --- プラクティスツールパネル --- */
@@ -203,7 +203,7 @@ button:hover {
     letter-spacing: 1px;
 }
 .practice-btn:hover {
-    border-color: #ff007f;
+    border-color: #ff8ec8;
     background: #333;
 }
 
@@ -221,14 +221,14 @@ button:hover {
 
 .modal-content {
     background: #1a1a1a;
-    border: 2px solid #00f0ff;
+    border: 2px solid #b7e0ff;
     border-radius: 12px;
     padding: 25px;
     width: 90%;
     max-width: 650px;
     max-height: 85vh;
     overflow-y: auto;
-    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+    box-shadow: 0 0 30px #b7e0ff50;
 }
 
 .modal-header {
@@ -242,7 +242,7 @@ button:hover {
 
 .modal-title {
     font-size: 18px;
-    color: #00f0ff;
+    color: #b7e0ff;
     font-weight: bold;
 }
 
@@ -257,7 +257,7 @@ button:hover {
 
 .section-title {
     font-size: 14px;
-    color: #ff007f;
+    color: #ff8ec8;
     margin: 15px 0 10px 0;
     font-weight: bold;
     letter-spacing: 1px;
@@ -282,7 +282,7 @@ button:hover {
 }
 
 .mino-card:hover {
-    border-color: #00f0ff;
+    border-color: #b7e0ff;
     background: #2a353a;
     transform: scale(1.03);
 }
