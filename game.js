@@ -789,11 +789,7 @@ let bombsRemaining = MAX_BOMBS;
 function useBomb() {
     if (currentScene !== 'game' || gameOver || bombsRemaining <= 0) return;
 
-    for (let y = 0; y < 20; y++) {
-        if(y>10){
-        arena[y][4]=0;
-        arena[y][5]=0;         
-        }else{
+    for (let y = 0; y < 12; y++) {
         arena[y].fill(0);         
         }
     }
