@@ -9,8 +9,8 @@
 // オプション状態を管理するグローバル変数
 let gameOptions = {
     allowBasic: true, allowAlternative: true, allowComplex: true, 
-    allowDistorted: true, allowExotic: true, pentaMixCount: 2
-};
+    allowDistorted: true, allowExotic: true, pentaMixCount: 2,
+    spawnMode: 'random'};
 
 // 【重要追加】UIの現在の状態を gameOptions に強制同期させる関数
 function syncGameOptions() {
@@ -19,10 +19,11 @@ function syncGameOptions() {
     const cCheck = document.getElementById('chkComplex');
     const dCheck = document.getElementById('chkDistorted');
     const eCheck = document.getElementById('chkExotic');
-    const slider = document.getElementById('pentaMixSlider');
+    const mixSelect = document.getElementById('pentaMixSelect');;
+    const spawnMode = document.getElementById('spawnModeSelect');
 
     // UI要素が画面に存在する場合のみ同期処理を行う
-    if (bCheck && aCheck && cCheck && dCheck && eCheck && slider) {
+    if (bCheck && aCheck && cCheck && dCheck && eCheck) {
         // 全てオフになっている場合は強制的にBasicをオンにする安全装置
         if (!bCheck.checked && !aCheck.checked && !cCheck.checked && !dCheck.checked && !eCheck.checked) {
             bCheck.checked = true;
@@ -33,7 +34,12 @@ function syncGameOptions() {
         gameOptions.allowComplex = cCheck.checked;
         gameOptions.allowDistorted = dCheck.checked;
         gameOptions.allowExotic = eCheck.checked;
-        gameOptions.pentaMixCount = parseInt(slider.value, 10);
+        gameOptions.pentaMixCount = parseInt(mixSelect.value, 10)
+
+        if (spawnMode) {
+            gameOptions.spawnMode = spawnMode.value; // ← 【追加】
+        }
+
     }
 }
 
@@ -44,7 +50,6 @@ function handleDetailedOptionChange() {
     const dCheck = document.getElementById('chkDistorted');
     const eCheck = document.getElementById('chkExotic');
     
-    const slider = document.getElementById('pentaMixSlider');
     const mixSettingArea = document.getElementById('pentaMixSetting');
 
     // すべてオフにされるとミノが枯渇するため、最低1つは強制ONにする安全ガード
@@ -62,19 +67,15 @@ function handleDetailedOptionChange() {
     const hasAnyPenta = (gameOptions.allowAlternative || gameOptions.allowComplex || gameOptions.allowDistorted || gameOptions.allowExotic);
 
     // Basic（テトロミノ）がオフ、またはペントミノがすべてオフの場合は、ブレンド比率設定を無効化
-    if (!gameOptions.allowBasic || !hasAnyPenta) {
-        slider.disabled = true;
-        mixSettingArea.style.opacity = "0.3";
-    } else {
-        slider.disabled = false;
-        mixSettingArea.style.opacity = "1.0";
+if (mixSelect && mixSettingArea) { // ← エラー防止のための安全確認を追加しておくのがオススメです
+        if (!gameOptions.allowBasic || !hasAnyPenta) {
+            mixSelect.disabled = true;
+            mixSettingArea.style.opacity = "0.3";
+        } else {
+            mixSelect.disabled = false;
+            mixSettingArea.style.opacity = "1.0";
+        }
     }
-}
-
-function handleDetailedSliderInput() {
-    const val = document.getElementById('pentaMixSlider').value;
-    document.getElementById('pentaMixValue').innerText = `${val} 個`;
-    gameOptions.pentaMixCount = parseInt(val, 10);
 }
 
 const COLS = 10;
@@ -144,11 +145,11 @@ const COLORS = [
     'oklch(0.75 0.18 150)', 'oklch(0.65 0.2 25)', 'oklch(0.7 0.2 250)',
     'oklch(0.8 0.16 75)', 'oklch(0.5 0.2 30)', 'oklch(0.65 0.2 100)',
     'oklch(0.55 0.2 210)', 'oklch(0.6 0.2 350)', 'oklch(0.55 0.2 165)',
-    'oklch(0.55 0.2 300)', 'oklch(0.85 0.10 100)', 'oklch(0.75 0.08 250)',
-    'oklch(0.75 0.12 25)', 'oklch(0.80 0.10 150)', 'oklch(0.5 0.025 250)',
+    'oklch(0.55 0.2 300)', 'oklch(0.80 0.07 100)', 'oklch(0.75 0.08 250)',
+    'oklch(0.8 0.12 150)', 'oklch(0.80 0.10 30)', 'oklch(0.5 0.025 250)',
     'oklch(0.5 0.05 75)', 'oklch(0.5 0.05 150)', 'oklch(0.5 0.05 0)',
     'oklch(0.8 0.2 350)', 'oklch(0.7 0.2 40)', 'oklch(0.75 0.16 170)',
-    'oklch(0.8 0.2 125)',  '#555555' 
+    'oklch(0.8 0.2 125)',  '#004060' 
 ];
 
 const PENTAMINOS = [
@@ -159,24 +160,24 @@ const PENTAMINOS = [
 
 // 内部名をプレイヤーに見せる名前にする
 const MINO_DISPLAY_NAMES = {
-    'I_penta':"i_Penta",
-    'T_penta':"t_Penta",
-    'Z_penta':"z_Penta",
-    'Z_prime_penta':"s_Penta",
-    'L_penta':"l_Penta",
-    'L_prime_penta':"j_Penta",
-    'P_penta':"a",
-    'P_prime_penta':"c",
-    'N_penta':"h",
-    'N_prime_penta':"r",
-    'Y_penta':"b",
-    'Y_prime_penta':"d",
-    'F_penta':"f",
-    'F_prime_penta':"g",
-    'X_penta':"x",
-    'V_penta':"v",
-    'W_penta':"w",
-    'U_penta':"u"
+    'I_penta':"I5",
+    'T_penta':"T5",
+    'Z_penta':"Z5",
+    'Z_prime_penta':"S5",
+    'L_penta':"L5",
+    'L_prime_penta':"J5",
+    'P_penta':"P",
+    'P_prime_penta':"G",
+    'N_penta':"N",
+    'N_prime_penta':"R",
+    'Y_penta':"Y",
+    'Y_prime_penta':"B",
+    'F_penta':"F",
+    'F_prime_penta':"E",
+    'X_penta':"X",
+    'V_penta':"V",
+    'W_penta':"W",
+    'U_penta':"U"
 };
 
 // --- 各種特化クラスの所属定義 ---
@@ -201,14 +202,14 @@ const WALL_KICK_JLTSZ = {
 
 const WALL_KICK_I = {
     "0->1": [[0,0], [-2,0], [1,0], [-2,1],[-2,2], [1,-2],[-2,-2]], 
-    "1->2": [[0,0], [-1,0], [2,0],[0,1], [-1,1],[2,1], [-1,-2],[2,-1],[2,-2]], 
+    "1->2": [[0,0], [-1,0], [2,0],[0,1], [-1,-2],[2,-1],[2,-2], [-1,1], [1,2]], 
     "2->3": [[0,0], [2,0], [-1,0], [-1,2], [-1,3], [2,-1],[-1,-1],[2,1],[2,2]], 
-    "3->0": [[0,0], [1,0], [-2,0], [1,2],[-2,2], [-2,-1], [-2,-2]],
+    "3->0": [[0,0], [1,0], [-2,0], [-2,-1], [1,2],[-2,2], [-2,-2]],
 
     "0->3": [[0,0], [-1,0], [2,0], [2,1], [2,2], [-1,-2],[2,-2]],
     "3->2": [[0,0], [-2,0], [1,0],[1,1], [1,-2], [1,-3], [-2,1],[-2,-1],[-2,-2]],
-    "2->1": [[0,0], [1,0], [-2,0], [-1,1], [1,2], [-2,-1],[0,-1],[-2,1],[-2,2]], 
-    "1->0": [[0,0], [2,0], [-1,0], [-1,2],[2,2], [2,-1],[2,-2]]
+    "2->1": [[0,0], [1,0], [-2,0], [-2,-1],[0,-1],[-2,1],[-2,2], [-1,1], [1,2]], 
+    "1->0": [[0,0], [2,0], [-1,0], [2,-1], [-1,2],[2,2],[2,-2]]
 };
 
 // 
@@ -415,6 +416,7 @@ document.addEventListener('keydown', event => {
     else if (event.key === 'z' || event.key === 'Z') { if (!event.repeat) playerRotate(-1); }
     else if (event.key === 'x' || event.key === 'X') { if (!event.repeat) playerRotate(1); }
     else if (event.key === ' ') { if (!event.repeat) playerHold(); }
+    else if (event.key === 'B') { if (!event.repeat) useBomb(); }
     else if (event.key === 'ArrowDown') { if (!isSoftDropping) { isSoftDropping = true; playerDrop(false); } }
 });
 
@@ -472,22 +474,32 @@ class PentaminoStream {
 class DynamicMinoDispenser {
     constructor() {
         this.tetroBase = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
-        // 各ペントミノのクラス割り当て
         this.classMap = {
             Alternative: ['I_penta', 'T_penta', 'Z_penta', 'Z_prime_penta', 'L_penta', 'L_prime_penta'],
             Complex: ['P_penta', 'P_prime_penta', 'N_penta', 'N_prime_penta'],
             Distorted: ['Y_penta', 'Y_prime_penta', 'F_penta', 'F_prime_penta'],
-            Exotic: ['X_penta', 'V_penta', 'W_penta', 'U_penta']
+            Exotic: ['X_penta', 'V_penta', 'W_penta', 'U_penta'] // VとWがそれぞれU,Xとペアになる
         };
-        this._pentaPool = [];
+        
+        // ユーザー指定の完全対応ペアリスト
+        this.pentaPairs = [
+            ['I_penta', 'T_penta'], ['Z_penta', 'Z_prime_penta'], ['L_penta', 'L_prime_penta'], // Alt
+            ['P_penta', 'P_prime_penta'], ['N_penta', 'N_prime_penta'], // Cmp
+            ['Y_penta', 'Y_prime_penta'], ['F_penta', 'F_prime_penta'], // Dist
+            ['X_penta', 'U_penta'], ['W_penta', 'V_penta'] // Exo
+        ];
+        
+        this._pentaPool = []; // ランダムモード用プール
+        this._pairPool = [];  // ペアモード用（7-BAG式）プール
+        this.pendingPair = null; 
     }
 
-    // 【新規追加】オプション変更時に古い残弾を完全に破棄する
     resetPool() {
         this._pentaPool = [];
+        this._pairPool = []; // リセット時にペアバッグも空にする
+        this.pendingPair = null;
     }
 
-    // 現在チェックが入っているペントミノだけを集めたプールを動的抽出する内部関数
     _getActivePentaPool() {
         let pool = [];
         if (gameOptions.allowAlternative) pool.push(...this.classMap.Alternative);
@@ -505,30 +517,78 @@ class DynamicMinoDispenser {
         const activeCount = activePentas.length;
 
         if (gameOptions.allowBasic) {
-            // 【BasicがONの場合】テトロミノ7種をベースにする
             bag.push(...this.tetroBase);
 
-            for (let i = 0; i < Math.min(gameOptions.pentaMixCount, activeCount); i++) {
-                // プールが枯渇している場合、補充して即座にシャッフルする
-                if (this._pentaPool.length === 0) {
-                    this._pentaPool = [...activePentas];
-                    if (this._pentaPool.length === 0) break;
+            if (gameOptions.spawnMode === 'pair') {
+                // ========================================================
+                // Pair System (ペア・BAG巡回アルゴリズム)
+                // ========================================================
+                // チェックされているクラスに属するペアのみを抽出
+                const validPairs = this.pentaPairs.filter(pair => activePentas.includes(pair[0]) && activePentas.includes(pair[1]));
 
-                    // プール内をフィッシャー・イェーツでシャッフル
-                    for (let j = this._pentaPool.length - 1; j > 0; j--) {
-                        const k = Math.floor(Math.random() * (j + 1));
-                        [this._pentaPool[j], this._pentaPool[k]] = [this._pentaPool[k], this._pentaPool[j]];
+                if (validPairs.length > 0) {
+                    if (gameOptions.pentaMixCount === 1) {
+                        // 【1個モード】1巡目に片方、2巡目に確実に相方を投入
+                        if (this.pendingPair && activePentas.includes(this.pendingPair)) {
+                            bag.push(this.pendingPair);
+                            this.pendingPair = null;
+                        } else {
+                            if (this._pairPool.length === 0) {
+                                this._pairPool = [...validPairs];
+                                for (let j = this._pairPool.length - 1; j > 0; j--) {
+                                    const k = Math.floor(Math.random() * (j + 1));
+                                    [this._pairPool[j], this._pairPool[k]] = [this._pairPool[k], this._pairPool[j]];
+                                }
+                            }
+                            const randomPair = this._pairPool.pop();
+                            if (Math.random() > 0.5) {
+                                bag.push(randomPair[0]);
+                                this.pendingPair = randomPair[1]; 
+                            } else {
+                                bag.push(randomPair[1]);
+                                this.pendingPair = randomPair[0]; 
+                            }
+                        }
+                    } else {
+                        // 【偶数モード】指定されたペア数を、同じBAG内に確実にセットで投入
+                        const pairsToAdd = Math.floor(gameOptions.pentaMixCount / 2);
+                        for (let i = 0; i < pairsToAdd; i++) {
+                            // プールが空なら補充してシャッフル
+                            if (this._pairPool.length === 0) {
+                                this._pairPool = [...validPairs];
+                                for (let j = this._pairPool.length - 1; j > 0; j--) {
+                                    const k = Math.floor(Math.random() * (j + 1));
+                                    [this._pairPool[j], this._pairPool[k]] = [this._pairPool[k], this._pairPool[j]];
+                                }
+                            }
+                            // プールからペアを1組取り出して両方BAGに入れる
+                            const nextPair = this._pairPool.pop();
+                            bag.push(nextPair[0], nextPair[1]);
+                        }
                     }
                 }
-                bag.push(this._pentaPool.pop());
+            } else {
+                // ========================================================
+                // Random Mix (完全ランダムモード)
+                // ========================================================
+                for (let i = 0; i < Math.min(gameOptions.pentaMixCount, activeCount); i++) {
+                    if (this._pentaPool.length === 0) {
+                        this._pentaPool = [...activePentas];
+                        if (this._pentaPool.length === 0) break;
+                        for (let j = this._pentaPool.length - 1; j > 0; j--) {
+                            const k = Math.floor(Math.random() * (j + 1));
+                            [this._pentaPool[j], this._pentaPool[k]] = [this._pentaPool[k], this._pentaPool[j]];
+                        }
+                    }
+                    bag.push(this._pentaPool.pop());
+                }
             }
         } else {
-            // 【BasicがOFFの場合】有効なペントミノ数に合わせてバッグを作成
+            // 【BasicがOFFの場合】（ランダム抽出を継続）
             if (activeCount > 0) {
                 while (bag.length < activeCount) {
                     if (this._pentaPool.length === 0) {
                         this._pentaPool = [...activePentas];
-                        // 【修正】コメントアウトされていたシャッフルを復活させ、偏りを防止
                         for (let j = this._pentaPool.length - 1; j > 0; j--) {
                             const k = Math.floor(Math.random() * (j + 1));
                             [this._pentaPool[j], this._pentaPool[k]] = [this._pentaPool[k], this._pentaPool[j]];
@@ -537,12 +597,11 @@ class DynamicMinoDispenser {
                     bag.push(this._pentaPool.pop());
                 }
             } else {
-                // 万が一の保険
                 bag.push(...this.tetroBase);
             }
         }
 
-        // バッグの中身を一括で完全にシャッフル（Basic ON時のテトロとペントを混ぜるため）
+        // BAGの中身を一括でシャッフル（Pairモードでも落ちてくる順番はランダム）
         for (let i = bag.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [bag[i], bag[j]] = [bag[j], bag[i]];
@@ -564,6 +623,62 @@ function getNextPiece() {
         pieceQueue.push(...dispenser.generateNextBag());
     }
     return pieceQueue.shift();
+}
+
+// ========================================================================
+// ■ 統計情報（リザルト用）変数
+// ========================================================================
+let gameStats = {
+    single: 0, double: 0, triple: 0, tetris: 0, pentris: 0,
+    tSpinZero: 0, tSpinMiniZero: 0, tSpinSingle: 0, tSpinDouble: 0, tSpinTriple: 0,
+    tSpinMiniSingle: 0, tSpinMiniDouble: 0,
+    maxCombo: 0, b2bCount: 0
+};
+
+// 【resetGame 関数の修正】
+function resetGame() {
+    if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    arena = createMatrix(COLS, ROWS);
+    score = 0; linesCleared = 0; level = 1; gameOver = false; holdPiece = null; 
+    
+    // 統計の初期化
+gameStats = {
+        single: 0, double: 0, triple: 0, tetris: 0, pentris: 0,
+        tSpinZero: 0, tSpinMiniZero: 0, tSpinSingle: 0, tSpinDouble: 0, tSpinTriple: 0,
+        tSpinMiniSingle: 0, tSpinMiniDouble: 0,
+        maxCombo: 0, b2bCount: 0,
+        bombBonus: 0, perfectBonus: 0
+    };
+
+    syncGameOptions();
+    dispenser.resetPool();
+    
+    pieceQueue = [];
+    while (pieceQueue.length < 18) {
+        pieceQueue.push(...dispenser.generateNextBag());
+    }
+
+    isSoftDropping = false; comboCount = -1; isBackToBack = false; lineClearTimer = 0;
+    linesToClear = []; pendingTSpinType = 'none'; floatingTexts = [];
+    document.getElementById('score').innerText = '0';
+    document.getElementById('lines').innerText = '0';
+    
+    const overlay = document.getElementById('gameOverOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+    }
+    // 前回のリザルトパネルが残っていれば非表示にする
+    const resultContainer = document.getElementById('resultContainer');
+    if (resultContainer) resultContainer.style.display = 'none';
+    
+updateLevelAndSpeed();
+    
+    bombsRemaining = MAX_BOMBS;
+    updateBombDisplay();
+    
+    resetPlayer();
+    lastTime = performance.now();
+    update();
 }
 
 /**
@@ -591,7 +706,7 @@ function resetPlayer() {
     // 押し上げ限界まで行っても衝突する場合は、完全に窒息しているためゲームオーバー
     if (collide(arena, player)) {
         gameOver = true;
-        document.getElementById('gameOverOverlay').style.display = 'flex';
+        showResultScreen(false); // GAME OVER としてリザルト表示
     }
     hasHeld = false;
 }
@@ -663,6 +778,75 @@ function playerHold() {
         lockResetCount = 0;
     }
     hasHeld = true;
+}
+
+// ========================================================================
+// ■ ボム
+// ========================================================================
+const MAX_BOMBS = 3;
+let bombsRemaining = MAX_BOMBS;
+
+function useBomb() {
+    if (currentScene !== 'game' || gameOver || bombsRemaining <= 0) return;
+
+    for (let y = 0; y < 20; y++) {
+        if(y>10){
+        arena[y][4]=0;
+        arena[y][5]=0;         
+        }else{
+        arena[y].fill(0);         
+        }
+    }
+
+    bombsRemaining--;
+    updateBombDisplay();
+
+ // --- 爆発エフェクトの発生 ---
+    const areaWidth = COLS * BLOCK_SIZE;
+    const areaHeight = 20 * BLOCK_SIZE;
+
+    // 対象領域全体を覆う強烈なフラッシュを発生
+    areaFlashes.push(new AreaFlash(areaWidth, areaHeight));
+
+    // 飛び散る火花（パーティクル）を「領域内のランダムな位置」に200個発生させて面爆発を演出
+    const colors = ['#f0eee0', '#feee00', '#ff8800', '#ff3300', '#888888']; // 煙のようなグレーも追加
+    for (let i = 0; i < 200; i++) {
+        // 発生位置を上部10段の中に分散させる
+        const pX = Math.random() * areaWidth;
+        const pY = Math.random() * areaHeight;
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        bombParticles.push(new BombParticle(pX, pY, color));
+    }
+
+    // エフェクトテキストの表示
+    floatingTexts.push(new FloatingText(canvas.width / 2, canvas.height / 3 + 40, "BOMB!!", '#cc3300', 64));
+    draw();
+}
+
+function updateBombDisplay() {
+    let bombEl = document.getElementById('bombCount');
+    if (!bombEl) {
+        // LEVELパネルの下に動的にボムパネルを生成して挿入
+        const levelBox = document.getElementById('level')?.parentElement;
+        if (levelBox && levelBox.parentElement) {
+            const bombBox = document.createElement('div');
+            bombBox.className = 'panel-box';
+            bombBox.style.marginTop = '15px';
+            bombBox.innerHTML = `
+                <div class="panel-title" style="color: #ff5555;">BOMB [Shift+B]</div>
+                <div id="bombCount" class="score-display" style="color: #ff5555; font-size: 18px;"></div>
+            `;
+            levelBox.parentElement.appendChild(bombBox);
+            bombEl = document.getElementById('bombCount');
+        }
+    }
+    
+    if (bombEl) {
+        let stars = '';
+        for (let i = 0; i < bombsRemaining; i++) stars += '★';
+        bombEl.innerText = stars === '' ? '0' : stars;
+        bombEl.style.color = bombsRemaining > 0 ? '#ff5555' : '#555';
+    }
 }
 
 /**
@@ -781,8 +965,6 @@ function getMinoClass(type) {
 
 // 【差し戻し】本家準拠 T系統限定・精密4隅T-Spin判定アルゴリズム
 function checkTSpin() {
-    // 【重要修正】実体のないspinCandidateを廃止し、本家準拠のlastActionチェックに戻します。
-    // 自動落下や手動移動、手動落下が挟まると 'rotate' ではなくなるため正確に判定されます。
     if (!player || !player.matrix || player.lastAction !== 'rotate') return 'none';
     
     // Tミノ、T_penta以外は判定を行わない
@@ -855,8 +1037,11 @@ function executeLineClear() {
     const linesCount = linesToClear.length;
     const minoClass = getMinoClass(player.lastLockedMinoType || 'Basic');
     
-    if (linesCount > 0) {
+if (linesCount > 0) {
         comboCount++;
+        // MAX REN (コンボ) の更新
+        if (comboCount > gameStats.maxCombo) gameStats.maxCombo = comboCount;
+
         linesToClear.sort((a, b) => a - b).forEach(y => {
             const row = arena.splice(y, 1)[0].fill(0);
             arena.unshift(row);
@@ -870,27 +1055,28 @@ function executeLineClear() {
         // --- 1. 標準基準点数の算出（T-Spin判定のみ） ---
         if (pendingTSpinType === 'regular') {
             isDifficult = true;
-            if (linesCount === 1) { baseScore = 800; actionText = "T-SPIN SINGLE"; }
-            else if (linesCount === 2) { baseScore = 1200; actionText = "T-SPIN DOUBLE"; }
-            else if (linesCount === 3) { baseScore = 1600; actionText = "T-SPIN TRIPLE"; }
+            if (linesCount === 1) { baseScore = 800; actionText = "T-SPIN SINGLE"; gameStats.tSpinSingle++; }
+            else if (linesCount === 2) { baseScore = 1200; actionText = "T-SPIN DOUBLE"; gameStats.tSpinDouble++; }
+            else if (linesCount === 3) { baseScore = 1600; actionText = "T-SPIN TRIPLE"; gameStats.tSpinTriple++; }
         } else if (pendingTSpinType === 'mini') {
             isDifficult = true;
-            if (linesCount === 1) { baseScore = 200; actionText = "T-SPIN MINI SINGLE"; }
-            else if (linesCount === 2) { baseScore = 400; actionText = "T-SPIN MINI DOUBLE"; }
+            if (linesCount === 1) { baseScore = 200; actionText = "T-SPIN MINI SINGLE"; gameStats.tSpinMiniSingle++; }
+            else if (linesCount === 2) { baseScore = 400; actionText = "T-SPIN MINI DOUBLE"; gameStats.tSpinMiniDouble++; }
         } else {
-            if (linesCount === 1) { baseScore = 100; isDifficult = false; actionText = "SINGLE"; }
-            else if (linesCount === 2) { baseScore = 300; isDifficult = false; actionText = "DOUBLE"; }
-            else if (linesCount === 3) { baseScore = 500; isDifficult = false; actionText = "TRIPLE"; }
-            else if (linesCount === 4) { baseScore = 800; isDifficult = true; actionText = "TETRIS"; }
-            else if (linesCount === 5) { baseScore = 1300; isDifficult = true; actionText = "PENTRIS"; }
+            if (linesCount === 1) { baseScore = 100; isDifficult = false; actionText = "SINGLE"; gameStats.single++; }
+            else if (linesCount === 2) { baseScore = 300; isDifficult = false; actionText = "DOUBLE"; gameStats.double++; }
+            else if (linesCount === 3) { baseScore = 500; isDifficult = false; actionText = "TRIPLE"; gameStats.triple++; }
+            else if (linesCount === 4) { baseScore = 800; isDifficult = true; actionText = "TETRIS"; gameStats.tetris++; }
+            else if (linesCount === 5) { baseScore = 1300; isDifficult = true; actionText = "PENTRIS"; gameStats.pentris++; }
         }
         
-        // --- 2. Alternativeクラスの「BtoB倍率超強化」ボーナス（維持） ---
+        // --- 2. Alternativeクラスの「BtoB倍率超強化」ボーナス ---
         if (isDifficult) {
             if (isBackToBack) { 
                 const btbMultiplier = (minoClass === 'Alternative') ? 2.5 : 1.5;
                 baseScore = Math.floor(baseScore * btbMultiplier); 
-                actionText = (minoClass === 'Alternative') ? "ALT-B2B " + actionText : "B2B " + actionText; 
+                actionText = (minoClass === 'Alternative') ? "bonus! " + actionText : "B2B " + actionText; 
+                gameStats.b2bCount++; // BtoB発動回数をカウント
             }
             isBackToBack = true;
         } else {
@@ -901,7 +1087,7 @@ function executeLineClear() {
         if (comboCount > 0) {
             const comboWeight = (minoClass === 'Complex') ? 200 : 50;
             baseScore += comboCount * comboWeight;
-            if (minoClass === 'Complex') actionText += ` (CMP-REN!)`;
+            if (minoClass === 'Complex') actionText += ` (bonus!)`;
         }
         
         // レベルに応じたスコア倍率の適用（維持）
@@ -912,21 +1098,25 @@ function executeLineClear() {
         yPos = Math.max(40, Math.min(yPos, canvas.height - 80));
         
         if (actionText !== "") floatingTexts.push(new FloatingText(canvas.width / 2, yPos, actionText, '#ff007f'));
-        floatingTexts.push(new FloatingText(canvas.width / 2, yPos + 22, `+${baseScore}`, '#00f0ff'));
-        if (comboCount > 0) floatingTexts.push(new FloatingText(canvas.width / 2, yPos + 44, `${comboCount} REN`, '#ffff00'));
+        floatingTexts.push(new FloatingText(canvas.width / 2, yPos + 22, `+${baseScore}`, '#b7e0ff'));
+        if (comboCount > 0) floatingTexts.push(new FloatingText(canvas.width / 2, yPos + 44, `${comboCount} REN`, '#f0eee0f00'));
         
-    } else {
+} else {
         // ラインが消えなかった時のスピン判定（T-Spin ZEROのみ計算）
         comboCount = -1;
         if (pendingTSpinType === 'regular' || pendingTSpinType === 'mini') {
             baseScore = (pendingTSpinType === 'regular') ? 400 : 100;
             actionText = (pendingTSpinType === 'regular') ? "T-SPIN ZERO" : "T-SPIN MINI ZERO";
             
+            // スピンゼロの回数をカウント
+            if (pendingTSpinType === 'regular') gameStats.tSpinZero++;
+            else gameStats.tSpinMiniZero++;
+
             baseScore = baseScore * level;
             score += baseScore;
             
             floatingTexts.push(new FloatingText(canvas.width / 2, player.pos.y * BLOCK_SIZE, actionText, '#ff007f'));
-            floatingTexts.push(new FloatingText(canvas.width / 2, player.pos.y * BLOCK_SIZE + 20, `+${baseScore}`, '#00f0ff'));
+            floatingTexts.push(new FloatingText(canvas.width / 2, player.pos.y * BLOCK_SIZE + 20, `+${baseScore}`, '#b7e0ff'));
         }
     }
     
@@ -937,7 +1127,70 @@ function executeLineClear() {
     player.lastLockedMinoType = null;
     if (!gameOver) resetPlayer();
 }
+// ========================================================================
+// ■ リザルト画面表示機能
+// ========================================================================
+function showResultScreen(isClear = false) {
+    const overlay = document.getElementById('gameOverOverlay');
+    if (!overlay) return;
+    
+    overlay.style.display = 'flex';
+    
+    const headline = overlay.querySelector('h2');
+    if (headline) {
+        if (isClear) {
+            headline.innerText = 'GAME CLEAR';
+            headline.style.color = '#b7e0ff';
+            headline.style.textShadow = '0 0 15px rgba(0,240,255,0.6)';
+        } else {
+            headline.innerText = 'GAME OVER';
+            headline.style.color = '#ff3333';
+            headline.style.textShadow = '0 0 10px rgba(255,51,51,0.5)';
+        }
+    }
+    
+    let resultContainer = document.getElementById('resultContainer');
+    if (!resultContainer) {
+        resultContainer = document.createElement('div');
+        resultContainer.id = 'resultContainer';
+        resultContainer.style.marginTop = '15px';
+        resultContainer.style.width = '280px';
+        resultContainer.style.textAlign = 'center';
+        
+        if (headline) {
+            headline.parentNode.insertBefore(resultContainer, headline.nextSibling);
+        } else {
+            overlay.insertBefore(resultContainer, overlay.firstChild);
+        }
+    }
+    
+    resultContainer.style.display = 'block';
+    
+    const tSpinTotal = gameStats.tSpinZero + gameStats.tSpinSingle + gameStats.tSpinDouble + gameStats.tSpinTriple + gameStats.tSpinMiniZero + gameStats.tSpinMiniSingle + gameStats.tSpinMiniDouble;
 
+    // リザルトの中身をHTMLで構築
+resultContainer.innerHTML = `
+        <div style="font-size: 18px; margin-bottom: 15px; color: #f0eee0;">SCORE: <span style="color: #b7e0ff; font-weight: bold; font-size: 28px; text-shadow: 0 0 8px #b7e0ff;">${score}</span></div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 13px; text-align: left; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 8px; border: 1px solid #444; color: #ccc;">
+            <div>LINES: <span style="color: #f0eee0; font-weight: bold;">${linesCleared}</span></div>
+            <div>LEVEL: <span style="color: #f0eee0; font-weight: bold;">${level}</span></div>
+            <div>SINGLE: <span style="color: #f0eee0;">${gameStats.single}</span></div>
+            <div>DOUBLE: <span style="color: #f0eee0;">${gameStats.double}</span></div>
+            <div>TRIPLE: <span style="color: #f0eee0;">${gameStats.triple}</span></div>
+            <div>TETRIS: <span style="color: #b7e0ff; font-weight: bold;">${gameStats.tetris}</span></div>
+            <div>PENTRIS: <span style="color: #ff88bb; font-weight: bold;">${gameStats.pentris}</span></div>
+            <div>MAX REN: <span style="color: #ddee66; font-weight: bold;">${gameStats.maxCombo}</span></div>
+            <div>BtoB: <span style="color: #ff88bb; font-weight: bold;">${gameStats.b2bCount}</span></div>
+            <div>T-SPIN: <span style="color: #9999ff; font-weight: bold;">${tSpinTotal}</span></div>
+            
+            <div style="grid-column: span 2; border-top: 1px dashed #666; padding-top: 8px; margin-top: 4px;"></div>
+            <div style="grid-column: span 2;">BOMB BONUS: <span style="color: #ff5555; font-weight: bold;">+${gameStats.bombBonus}</span></div>
+            <div style="grid-column: span 2;">PERFECT (NO BOMB): <span style="color: #ff5555; font-weight: bold;">+${gameStats.perfectBonus}</span></div>
+        </div>
+    `;
+}
+
+// 【updateLevelAndSpeed 関数の修正】
 function updateLevelAndSpeed() {
     level = Math.floor(linesCleared / 12) + 1;
     if (level > 12) level = 12;
@@ -950,18 +1203,18 @@ function updateLevelAndSpeed() {
     
     if (linesCleared >= 144) {
         gameOver = true;
-        const overlay = document.getElementById('gameOverOverlay');
-        if (overlay) {
-            overlay.style.display = 'flex';
-            const headline = overlay.querySelector('h2');
-            if (headline) {
-                headline.innerText = 'GAME CLEAR';
-                headline.style.color = '#00f0ff';
-                headline.style.textShadow = '0 0 15px rgba(0,240,255,0.6)';
-            }
-        }
+
+        gameStats.bombBonus = bombsRemaining * 15000;
+        gameStats.perfectBonus = (bombsRemaining === MAX_BOMBS) ? 50000 : 0;
+        score += gameStats.bombBonus + gameStats.perfectBonus;
+        
+        const scoreEl = document.getElementById('score');
+        if (scoreEl) scoreEl.innerText = score;
+
+        showResultScreen(true); // GAME CLEAR としてリザルト表示
     }
 }
+
 
 function getGhostPosition() {
     if (!player || !player.matrix) return player ? player.pos.y : 0;
@@ -1069,7 +1322,7 @@ function draw() {
     });
 
     if (lineClearTimer > 0 && linesToClear.length > 0) {
-        ctx.fillStyle = '#ffffff';
+        ctx.fillStyle = '#f0eee0';
         linesToClear.forEach(y => { ctx.fillRect(0, y * BLOCK_SIZE, canvas.width, BLOCK_SIZE); });
     }
 
@@ -1086,6 +1339,14 @@ function draw() {
             });
         });
     }
+
+    areaFlashes.forEach(f => f.update());
+    areaFlashes = areaFlashes.filter(f => f.life > 0);
+    areaFlashes.forEach(f => f.draw(ctx));
+
+    bombParticles.forEach(p => p.update());
+    bombParticles = bombParticles.filter(p => p.life > 0);
+    bombParticles.forEach(p => p.draw(ctx));
 
     floatingTexts.forEach(t => t.draw(ctx));
     drawHold();
@@ -1126,6 +1387,71 @@ function drawNext() {
                 if (value !== 0) drawBlock(nextCtx, x + xOffset / MINI_BLOCK_SIZE, y + yOffset / MINI_BLOCK_SIZE, MINI_BLOCK_SIZE, value);
             });
         });
+    }
+}
+
+// ========================================================================
+// ■ 爆発エフェクト（パーティクル＆衝撃波）管理
+// ========================================================================
+// ========================================================================
+// ■ 爆発エフェクト（全体閃光＆パーティクル）管理
+// ========================================================================
+let bombParticles = [];
+let areaFlashes = []; // shockwaves から変更
+
+class BombParticle {
+    constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 20 + 5; // 爆発の勢いを少し強化
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.life = 1.0;
+        this.decay = Math.random() * 0.02 + 0.015;
+        this.color = color;
+        this.size = Math.random() * 6 + 2; // 破片を少し大きく
+    }
+    update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vx *= 0.90; // 空気抵抗
+        this.vy *= 0.90;
+        this.vy += 0.4;  // 重力を強めて破片っぽく落とす
+        this.life -= this.decay;
+    }
+    draw(ctx) {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x, this.y, this.size, this.size); // 丸から四角い破片に変更してブロック感を出す
+        ctx.restore();
+    }
+}
+
+// 【新規追加】消えた領域全体が激しく発光するクラス
+class AreaFlash {
+    constructor(width, height) {
+        this.width = width;
+        this.height = height;
+        this.life = 1.0;
+        this.decay = 0.04; // 閃光が消えるスピード
+    }
+    update() {
+        this.life -= this.decay;
+    }
+    draw(ctx) {
+        ctx.save();
+        // 激しいフラッシュを表現するため、不透明度を加算ブレンドっぽくする
+        ctx.globalAlpha = Math.max(0, this.life);
+        ctx.fillStyle = '#f0eee0'; // 真っ白な閃光
+        ctx.fillRect(0, 0, this.width, this.height);
+        
+        // 追加で青色のオーバーレイ
+        ctx.globalAlpha = Math.max(0, this.life * 0.5);
+        ctx.fillStyle = '#6677ff';
+        ctx.fillRect(0, 0, this.width, this.height);
+        ctx.restore();
     }
 }
 
@@ -1173,8 +1499,8 @@ function buildVisualMinoSelector() {
         levelBox.className = 'panel-box';
         levelBox.style.marginTop = '15px';
         levelBox.innerHTML = `
-            <div class="panel-title" style="color: #00f0ff;">LEVEL</div>
-            <div id="level" class="score-display" style="color: #00f0ff;">1</div>
+            <div class="panel-title" style="color: #b7e0ff;">LEVEL</div>
+            <div id="level" class="score-display" style="color: #b7e0ff;">1</div>
         `;
         linesBox.parentNode.insertBefore(levelBox, linesBox.nextSibling);
     }
@@ -1244,3 +1570,159 @@ canvas.addEventListener('mousedown', event => {
     }
 });
 
+//ミノ形状図鑑
+
+// ========================================================================
+// ■ ペア＆形状図鑑の動的生成（Canvasレンダリング）
+// ========================================================================
+// ========================================================================
+// ■ ペア＆形状図鑑の動的生成（Canvasレンダリング・説明文付き）
+// ========================================================================
+function buildPairLibrary() {
+    const container = document.getElementById('pairLibraryContent');
+    if (!container) return;
+    container.innerHTML = ''; 
+
+    // クラス名、カラー、説明文、属するミノのペア（配列）をまとめた統合データ
+    const LIBRARY_DEF = [
+                {
+            name: 'Alternative',
+            color: '#ff88bb',
+            desc: '４ライン消しもできるけど、邪魔になることも多いミノ',
+            items: [['I_penta', 'T_penta'], ['Z_penta', 'Z_prime_penta'], ['L_penta', 'L_prime_penta']]
+        },
+        {
+            name: 'Basic',
+            color: '#eef0ff',
+            desc: 'いつもの使い慣れたテトリスのミノ',
+            // Basicは厳密なペアではないため、視覚的に似たものを隣り合わせ、Tは単独にする
+            items: [['S'], ['Z'], ['L'], ['J'], ['I'], ['O'], ['T']]
+        },
+        {
+            name: 'Complex',
+            color: '#99bbee',
+            desc: 'くぼみを埋めやすいミノ',
+            items: [['P_penta', 'P_prime_penta'], ['N_penta', 'N_prime_penta']]
+        },
+        {
+            name: 'Distorted',
+            color: '#ddee66',
+            desc: 'なんかゆがんだ形状のミノ',
+            items: [['Y_penta', 'Y_prime_penta'], ['F_penta', 'F_prime_penta']]
+        },
+        {
+            name: 'Exotic',
+            color: '#80ccac',
+            desc: '特異な形状のミノ',
+            items: [['X_penta', 'U_penta'], ['W_penta', 'V_penta']]
+        }
+    ];
+
+    LIBRARY_DEF.forEach(category => {
+        const section = document.createElement('div');
+        
+        // クラス見出し
+        const title = document.createElement('div');
+        title.style.color = category.color;
+        title.style.fontWeight = 'bold';
+        title.style.borderBottom = `1px solid ${category.color}`;
+        title.style.marginBottom = '5px';
+        title.style.paddingBottom = '3px';
+        title.style.fontSize = '14px';
+        title.innerText = `■ ${category.name}`;
+        section.appendChild(title);
+
+        // クラスの解説文（index.htmlから引っ越してきた部分）
+        const desc = document.createElement('div');
+        desc.style.color = '#ccc';
+        desc.style.fontSize = '11px';
+        desc.style.marginBottom = '12px';
+        desc.style.lineHeight = '1.5';
+        desc.innerText = category.desc;
+        section.appendChild(desc);
+
+// 【追加】このカテゴリがすべて単独ブロック（長さ1）か判定する
+        const isSingleOnly = category.items.every(pair => pair.length === 1);
+
+        // ペアを並べるグリッド
+        const grid = document.createElement('div');
+        grid.style.display = 'grid';
+        
+        // 【修正】単独の場合は4列（ペアの半分の幅）、ペアの場合は2列にする
+        grid.style.gridTemplateColumns = isSingleOnly ? 'repeat(4, 1fr)' : '1fr 1fr';
+        grid.style.gap = '8px';
+        grid.style.marginBottom = '20px'; // セクション間の余白
+
+        category.items.forEach(pair => {
+            const pairRow = document.createElement('div');
+            pairRow.style.display = 'flex';
+            pairRow.style.alignItems = 'center';
+            
+            // 【修正】space-aroundからcenterに変更し、gapで間隔をあけることで、単独時もペア時も綺麗に中央配置する
+            pairRow.style.justifyContent = 'center';
+            pairRow.style.gap = '15px'; 
+            
+            pairRow.style.background = 'rgba(255,255,255,0.05)';
+            pairRow.style.padding = '8px 5px';
+            pairRow.style.borderRadius = '6px';
+            pairRow.style.border = '1px solid #333';
+
+            // キャンバス生成用ローカル関数
+            const createCard = (key) => {
+                const card = document.createElement('div');
+                card.style.display = 'flex';
+                card.style.flexDirection = 'column';
+                card.style.alignItems = 'center';
+                card.style.gap = '5px';
+
+                const shape = SHAPES[key];
+                const canvas = document.createElement('canvas');
+                const cellSize = 11; // 種類が増えたので少しだけ縮小
+                canvas.width = shape[0].length * cellSize;
+                canvas.height = shape.length * cellSize;
+                const ctx = canvas.getContext('2d');
+                
+                shape.forEach((row, y) => {
+                    row.forEach((val, x) => {
+                        if (val !== 0) drawBlock(ctx, x, y, cellSize, val);
+                    });
+                });
+
+                const label = document.createElement('div');
+                label.style.fontSize = '14px';
+                label.style.color = '#ccc';
+                label.style.fontWeight = 'bold';
+                let displayName = (typeof MINO_DISPLAY_NAMES !== 'undefined' && MINO_DISPLAY_NAMES[key]) 
+                                    ? MINO_DISPLAY_NAMES[key] : key.replace('_penta', '');
+                label.innerText = displayName;
+
+                card.appendChild(canvas);
+                card.appendChild(label);
+                return card;
+            };
+
+            // ペアの左側（または単独）を追加
+            pairRow.appendChild(createCard(pair[0]));
+            
+            // ペアの右側が存在する場合のみ「↔」と右側を追加
+            if (pair.length > 1) {
+                const link = document.createElement('div');
+                link.innerText = '⇔';
+                link.style.color = '#DDFF66';
+                link.style.fontSize = '16px';
+                pairRow.appendChild(link);
+                pairRow.appendChild(createCard(pair[1]));
+            }
+
+            grid.appendChild(pairRow);
+        });
+        
+        section.appendChild(grid);
+        container.appendChild(section);
+    });
+}
+
+// 画面の読み込みが終わった瞬間に図鑑の中身を作り上げる
+window.addEventListener('DOMContentLoaded', () => {
+    buildPairLibrary();
+});
