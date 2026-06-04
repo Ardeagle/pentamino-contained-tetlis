@@ -10,95 +10,81 @@
 
     <h1>TETRIS + PENTOMINO</h1>
 
-    <div id="startMenu">
+<div id="startMenu">
         <div class="menu-card">
             <div class="menu-title">SELECT MODE</div>
-            <button class="menu-btn" onclick="startGameMode('game')">NORMAL GAME</button>
-            <button class="menu-btn" onclick="startGameMode('practice')">PRACTICE MODE</button>
-            <details>
-                <summary>OPTION</summary>
-            <div class="panel-box" id="optionsAndLibraryPanel" style="margin-top: 20px; width: 340px; background: rgba(0,0,0,0.7); border: 2px solid #444; padding: 20px; border-radius: 12px; backdrop-filter: blur(10px); color: #fff;">
-    <div class="panel-title" style="color: #00f0ff; font-weight: bold; margin-bottom: 15px; text-align: center; font-size: 16px; letter-spacing: 1px;">GENRE OPTIONS & LIBRARY</div>
-    
-    <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: bold; color: #fff;">■ Basic (テトロミノ 7種)</span>
-            <input type="checkbox" id="chkBasic" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: bold; color: #ff007f;">■ Alternative (BtoB特化 6種)</span>
-            <input type="checkbox" id="chkAlternative" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: bold; color: #00f0ff;">■ Complex (コンボ特化 4種)</span>
-            <input type="checkbox" id="chkComplex" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: bold; color: #ffff00;">■ Distorted (技術・手数特化 4種)</span>
-            <input type="checkbox" id="chkDistorted" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 13px; font-weight: bold; color: #a020f0;">■ Exotic (ロマン回転 4種)</span>
-            <input type="checkbox" id="chkExotic" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
+            <button class="menu-btn" onclick="startGameMode('game')">ゲームスタート</button>
+            <button class="menu-btn" onclick="startGameMode('practice')">練習モード</button>
+            
+            <button class="menu-btn" onclick="document.getElementById('optionsModal').style.display='flex'" style="background: #3300cc; border-color: #3a6070; margin-top: 15px;">設定とペンタミノ図鑑</button>
         </div>
     </div>
+
+    <div id="optionsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.85); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(6px);">
+        
+        <div class="panel-box" id="optionsAndLibraryPanel" style="position: relative; width: 350px; background: rgba(20,20,20,0.95); border: 2px solid #99bbee; padding: 25px 20px 20px 20px; border-radius: 12px; color: #eef0ff; box-shadow: 0 0 40px #99bbee40; max-height: 90vh; overflow-y: auto;">
+        
+            <button onclick="document.getElementById('optionsModal').style.display='none'" style="position: absolute; top: 8px; right: 12px; background: none; border: none; color: #888; font-size: 28px; cursor: pointer; line-height: 1; transition: 0.2s;" onmouseover="this.style.color='#eef0ff'" onmouseout="this.style.color='#888'">&times;</button>
     
-    <div id="pentaMixSetting" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
-        <div style="display: flex; justify-content: space-between; font-size: 12px;">
-            <span>Basic1巡に混ざるペントミノ数:</span>
-            <span id="pentaMixValue" style="color: #ffff00; font-weight: bold;">2 個</span>
-        </div>
-        <input type="range" id="pentaMixSlider" min="1" max="18" value="2" step="1" style="width: 100%; cursor: pointer;" oninput="handleDetailedSliderInput()">
-    </div>
-    <details>
-        <summary>クリックして追加ミノの詳細確認</summary>
-    <div style="border-top: 1px solid #444; padding-top: 10px;">
-        <div style="font-size: 12px; color: #888; text-align: center; margin-bottom: 8px;">▼ クリックしてクラスの解説閲覧</div>
-<div class="library-accordion" style="display: flex; flex-direction: column; gap: 5px; max-height: 200px; overflow-y: auto; padding-right: 3px;">
+            <div class="panel-title" style="color: #99bbee; font-weight: bold; margin-bottom: 15px; text-align: center; font-size: 16px; letter-spacing: 1px;">出現設定とミノ図鑑</div>
+            <button onclick="document.getElementById('pairLibraryModal').style.display='flex'" style="width: 100%; margin-top: 15px; background: #3300cc; border: 1px solid #99bbee; color: #99bbee; padding: 10px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.2s;" onmouseover="this.style.background='#3a6070'" onmouseout="this.style.background='#2a4050'">ミノ図鑑</button>
     
-    <details style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 4px; padding: 5px; font-size: 11px;">
-        <summary style="color: #fff; font-weight: bold; cursor: pointer;">[Basic] いつもの4マス（テトロミノ）</summary>
-        <p style="color: #ccc; margin: 4px 0 2px 0; line-height: 1.4;">テトリスでおなじみの安心安全な7人組。バランスが最高に良く、ライン消しも組み立ても彼らがベースになります。やっぱり王道が一番扱いやすい！</p>
-        <p style="color: #888; font-style: italic; margin: 0; text-align: right; font-size: 10px;">"実家のような安心感。迷ったらとりあえずBasicに戻ってこよう。"</p>
-    </details>
-    
-    <details style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 4px; padding: 5px; font-size: 11px;">
-        <summary style="color: #ff007f; font-weight: bold; cursor: pointer;">[Alternative] ながーーい直線（BtoB特化）</summary>
-        <p style="color: #ccc; margin: 4px 0 2px 0; line-height: 1.4;">【特性: BtoBスコア 2.5倍】5マスの「I」や、やたら縦に長いL・J、出っ張りが1マス長いＴ、真ん中が1マス長くなったＳ、Ｚととにかく場所を取るノッポな見た目の6種。置き場所に困る代わりに、連続でラインを消したときのスコアが超高くなります！</p>
-        <p style="color: #888; font-style: italic; margin: 0; text-align: right; font-size: 10px;">"ちょっと邪魔だけど決まればデカい！大逆転を狙えるロマン砲です。"</p>
-    </details>
-    
-    <details style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 4px; padding: 5px; font-size: 11px;">
-        <summary style="color: #00f0ff; font-weight: bold; cursor: pointer;">[Complex] まとまりの良い塊（コンボ特化）</summary>
-        <p style="color: #ccc; margin: 4px 0 2px 0; line-height: 1.4;">【特性: REN（コンボ）加算が4倍】3x3の枠の中にぎゅっと四角く詰まったaとc、そしてくぼみにぴったりはまるpとr。地形の穴を埋めやすく、ポンポン連続でラインを消す「REN（コンボ）」を繋ぐのに大活躍します。</p>
-        <p style="color: #888; font-style: italic; margin: 0; text-align: right; font-size: 10px;">"隙間を埋めるのが大得意。コンボを繋げてハイスコアを叩き出そう！"</p>
-    </details>
-    
-    <details style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 4px; padding: 5px; font-size: 11px;">
-        <summary style="color: #ffff00; font-weight: bold; cursor: pointer;">[Distorted] ヘンテコな凸凹（手数・技術特化）</summary>
-        <p style="color: #ccc; margin: 4px 0 2px 0; line-height: 1.4;">bやd,fやgなど1マスだけポツンとハミ出ていたりする、ちょっといびつな4種。置くのが難しいクセモノ</p>
-        <p style="color: #888; font-style: italic; margin: 0; text-align: right; font-size: 10px;">"このカタチ、どう置けばいいの！？使いこなせたら立派な職人です。だけ意外とはまっちゃうかもよ？"</p>
-    </details>
-    
-    <details style="background: rgba(255,255,255,0.03); border: 1px solid #333; border-radius: 4px; padding: 5px; font-size: 11px;">
-        <summary style="color: #a020f0; font-weight: bold; cursor: pointer;">[Exotic] 個性派のヘンテコ形状（ロマン回転）</summary>
-        <p style="color: #ccc; margin: 4px 0 2px 0; line-height: 1.4;">【特性: 意外なところに入り込める】大きなカギ爪のv、階段みたいなw、カップ型のuなど、なんか面白い形のxなど個性派な4種。このゲーム専用の「おかしな壁蹴り」をするので、ありえない隙間にクルッと潜り込めます。</p>
-        <p style="color: #888; font-style: italic; margin: 0; text-align: right; font-size: 10px;">"見た目も動きも規格外。おなじみのセオリーを無視して楽しんじゃえ！"</p>
-    </details>
-    
-</div>
-    </div>
-    </details>
-</div>
-            </details>
-            <div class="menu-guide">
-                <strong>【操作方法】</strong><br>
-                ・← / → : 移動<br>
-                ・↑ : ハードドロップ<br>
-                ・↓ : ソフトドロップ<br>
-                ・Z : 左回転 / X : 右回転 / Space : HOLD<br>
-                ・<strong>Esc</strong> : メニューに戻る / モーダルを閉じる
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+                <span style="font-size: 13px; font-weight: bold; color: #fff;">ペントミノ出現方式</span>
+                <select id="spawnModeSelect" style="background: #222; color: #99bbee; border: 1px solid #444; border-radius: 4px; padding: 4px; font-weight: bold; cursor: pointer;" onchange="handleDetailedOptionChange()">
+                    <option value="random">Random Mix (ランダム)</option>
+                    <option value="pair">Pair System (ペアで出現)</option>
+                </select>
             </div>
+            
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; font-weight: bold; color: #eef0ff;">■ Basic(I,O,T,S,Z,L,J)</span>
+                    <input type="checkbox" id="chkBasic" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; font-weight: bold; color: #ff88bb;">■ Alternative(I5,T5,Z5,S5,L5,J5)</span>
+                    <input type="checkbox" id="chkAlternative" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; font-weight: bold; color: #99bbee;">■ Complex(P,G,N,R)</span>
+                    <input type="checkbox" id="chkComplex" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; font-weight: bold; color: #ddee88;">■ Distorted(Y,B,F,E)</span>
+                    <input type="checkbox" id="chkDistorted" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-size: 13px; font-weight: bold; color: #80ccac;">■ Exotic(X,V,W,U)</span>
+                    <input type="checkbox" id="chkExotic" checked style="width: 16px; height: 16px; cursor: pointer;" onchange="handleDetailedOptionChange()">
+                </div>
+            </div>
+            
+                <div id="pentaMixSetting" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 8px; border-radius: 6px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: bold; color: #fff;">
+                    <span>Basic1巡に混ざるペントミノ数:</span>
+                    <select id="pentaMixSelect" style="background: #222; color: #99bbee; border: 1px solid #444; border-radius: 4px; padding: 4px; cursor: pointer; font-weight: bold;" onchange="handleDetailedOptionChange()">
+                        <option value="1">1 個</option>
+                        <option value="2" selected>2 個</option>
+                        <option value="4">4 個</option>
+                        <option value="6">6 個</option>
+                        <option value="8">8 個</option>
+                        <option value="18">18 個</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div style="border-top: 1px solid #444; padding-top: 10px;">
+            </div>
+        </div>
+    </div>
+    <div id="pairLibraryModal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0, 0, 0, 0.9); z-index: 2500; justify-content: center; align-items: center; backdrop-filter: blur(8px);">
+        <div class="panel-box" style="position: relative; width: 95%; max-width: 420px; background: rgba(20,20,20,0.95); border: 2px solid #99bbee; padding: 25px 20px 20px 20px; border-radius: 12px; color: #fff; max-height: 90vh; overflow-y: auto;">
+            <button onclick="document.getElementById('pairLibraryModal').style.display='none'" style="position: absolute; top: 8px; right: 12px; background: none; border: none; color: #888; font-size: 28px; cursor: pointer; line-height: 1;">&times;</button>
+            
+            <div class="panel-title" style="color: #99bbee; text-align: center; margin-bottom: 15px; font-weight: bold; font-size: 16px;">PENTOMINO PAIRS</div>
+            
+            <div id="pairLibraryContent" style="display: flex; flex-direction: column; gap: 15px;"></div>
         </div>
     </div>
 
@@ -122,8 +108,8 @@
                 <div id="lines" class="score-display" style="color: #edf2f7;">0</div>
             </div>
             
-            <div id="practiceTools" class="panel-box" style="border-color: #ff007f;">
-                <div class="panel-title" style="color: #ff007f;">PRACTICE</div>
+            <div id="practiceTools" class="panel-box" style="border-color: #ff88bb;">
+                <div class="panel-title" style="color: #ff88bb;">PRACTICE</div>
                 <button class="practice-btn" onclick="openMinoSelector()">召喚パレット</button>
                 <button class="practice-btn" id="fallToggleBtn" onclick="toggleFalling()">落下: ON</button>
                 <button class="practice-btn" onclick="clearField()">盤面クリア</button>
