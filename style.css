@@ -314,3 +314,70 @@ button:hover {
     text-align: center;
     word-break: break-all;
 }
+
+/* =========================================
+   スマートフォン向けレスポンシブ設定
+   ========================================= */
+@media (max-width: 768px) {
+    /* 画面全体を縦並びにし、横幅を画面に収める */
+    body {
+        overflow-x: hidden;
+    }
+    
+    #gameContainer {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* メインキャンバスのタッチスクロール・ズームを無効化 */
+    #mainCanvas {
+        touch-action: none;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* PC用の操作案内ボタンを隠す */
+    #controlButtons {
+        display: none !important;
+    }
+
+    /* スマホ用バーチャルパッドを表示 */
+    #mobileControls {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+        max-width: 320px;
+        margin: 10px auto;
+    }
+
+    .pad-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .v-btn {
+        flex: 1;
+        background: #2a4050;
+        border: 1px solid #b7e0ff;
+        color: #fff;
+        padding: 12px 5px;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 12px;
+        touch-action: manipulation; /* ダブルタップズーム防止 */
+        user-select: none; /* テキスト選択防止 */
+    }
+
+    .v-btn:active {
+        background: #b7e0ff;
+        color: #000;
+    }
+    
+    /* オプションや図鑑モーダルの幅調整 */
+    .panel-box {
+        width: 90% !important;
+    }
+}

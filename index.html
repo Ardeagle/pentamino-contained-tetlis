@@ -25,6 +25,7 @@
                 ・Z : 左回転 / X : 右回転 / Space : HOLD<br>
                 ・<strong>Esc</strong> : メニューに戻る / モーダルを閉じる
             </div>
+            </div>
         </div>
     </div>
 
@@ -95,7 +96,6 @@
             <div id="pairLibraryContent" style="display: flex; flex-direction: column; gap: 15px;"></div>
         </div>
     </div>
-
     <div class="game-container" id="gameContainer" style="position: relative;">
         <div id="gameOverOverlay">
             <h2>GAME OVER</h2>
@@ -140,6 +140,23 @@
         <button onclick="playerRotate(1)">↻ 右回転 (X)</button>
         <button onclick="playerHold()">HOLD (Space)</button>
         <button onclick="backToMenu()" style="background: #444;">メニューへ戻る (Esc)</button>
+    </div>
+
+    <div id="mobileControls" style="display: none;">
+        <div class="pad-row">
+            <button class="v-btn" id="vBtnHold">ホールド</button>
+            <button class="v-btn" id="vBtnUp">ハードドロップ</button>
+            <button class="v-btn" id="vBtnBomb">BOMB</button>
+        </div>
+        <div class="pad-row">
+            <button class="v-btn" id="vBtnLeft">◀</button>
+            <button class="v-btn" id="vBtnDown">▼</button>
+            <button class="v-btn" id="vBtnRight">▶</button>
+        </div>
+        <div class="pad-row">
+            <button class="v-btn" id="vBtnRotL">↺</button>
+            <button class="v-btn" id="vBtnRotR">↻</button>
+        </div>
     </div>
 
     <div id="minoSelectorModal">

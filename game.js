@@ -740,8 +740,6 @@ function playerDrop(isAuto = false) {
     if (collide(arena, player, {x: 0, y: 1})) { dropCounter = 0; return; }
     player.pos.y++;
     
-    // 【重要修正】自動落下（重力）の際も、最後のアクションを上書きして
-    // 上空で回転させた履歴が設置時まで残り続けないように変更します。
     player.lastAction = isAuto ? 'autoDrop' : 'drop';
     
     dropCounter = 0;
@@ -790,7 +788,6 @@ function useBomb() {
 
     for (let y = 0; y < 12; y++) {
         arena[y].fill(0);         
-        }
     }
 
     bombsRemaining--;
@@ -1716,6 +1713,68 @@ function buildPairLibrary() {
         container.appendChild(section);
     });
 }
+
+// ========================================================================
+// ■ スマートフォン向け タッチ操作（バーチャルパッド）連携
+// ========================================================================
+const bindTouch = (id, callback) => {
+    const btn = document.getElementById(id);
+    if (btn) {
+        // clickよりも反応が早いtouchstartを使用
+        btn.addEventListener('touchstart', (e) => {
+            e.preventDefault(); // ボタン押下時のスクロールやズームを防止
+            callback();
+        }, { passive: false });
+    }
+};
+
+// 各ボタンに関数を割り当て
+bindTouch('vBtnLeft', () => playerMove(-1));
+bindTouch('vBtnRight', () => playerMove(1));
+bindTouch('vBtnDown', () => playerDrop());
+bindTouch('vBtnRotL', () => playerRotate(-1));
+bindTouch('vBtnRotR', () => playerRotate(1));
+bindTouch('vBtnHold', () => playerHold());
+bindTouch('vBtnBomb', () => { if (typeof useBomb === 'function') useBomb(); });
+
+// ハードドロップ（一気に下まで落とす）処理
+bindTouch('vBtnUp', () => {
+    if (gameOver || !player || !player.matrix) return;
+    while (!collide(arena, player)) {
+        player.pos.y++;
+    }
+    player.pos.y--; // 衝突した1個上に戻す
+    player.lastAction = 'move';
+    // 落下後、即座にロック（固定）処理へ移行するための関数を呼ぶか、タイマーをゼロにする
+    lockDelayCounter = 1000; // 既存のロック遅延を即座に満了させる
+});
+
+// ========================================================================
+// ■ プラクティスモードのキャンバスタッチ対応
+// ========================================================================
+canvas.addEventListener('touchstart', event => {
+    if (currentScene !== 'practice') return;
+    event.preventDefault(); // スクロール防止
+    
+    const touch = event.touches[0];
+    const rect = canvas.getBoundingClientRect();
+    
+    // CSSでキャンバスが縮小されている場合を考慮して比率を計算
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    
+    const clientX = (touch.clientX - rect.left) * scaleX;
+    const clientY = (touch.clientY - rect.top) * scaleY;
+    
+    const col = Math.floor(clientX / BLOCK_SIZE);
+    const row = Math.floor(clientY / BLOCK_SIZE);
+    
+    if (col >= 0 && col < COLS && row >= 0 && row < ROWS) {
+        // 現在のブロックを消すか、選択中のブロックを置くかの処理（既存のmousedownと同等）
+        arena[row][col] = (arena[row][col] === 0) ? 1 : 0; // 例: 簡易的なトグル
+        draw();
+    }
+}, { passive: false });
 
 // 画面の読み込みが終わった瞬間に図鑑の中身を作り上げる
 window.addEventListener('DOMContentLoaded', () => {
