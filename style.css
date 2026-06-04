@@ -319,22 +319,24 @@ button:hover {
    スマートフォン向けレスポンシブ設定
    ========================================= */
 @media (max-width: 768px) {
-    /* 画面全体を縦並びにし、横幅を画面に収める */
     body {
         overflow-x: hidden;
     }
     
+    /* ゲーム画面全体をスマホの横幅に合わせて縮小する魔法 */
     #gameContainer {
-        flex-direction: column;
-        align-items: center;
-        gap: 10px;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center;
+        transform: scale(0.65); /* スマホ画面に合わせて65%に縮小（はみ出る場合は0.6等に下げてください） */
+        transform-origin: top center;
+        margin-bottom: -250px; /* 縮小して余った下のスペースを詰める */
     }
 
-    /* メインキャンバスのタッチスクロール・ズームを無効化 */
-    #mainCanvas {
-        touch-action: none;
-        max-width: 100%;
-        height: auto;
+    /* 各パネルや盤面が勝手に細く潰れるのを防ぐ */
+    .side-panel, #mainCanvas {
+        flex-shrink: 0;
     }
 
     /* PC用の操作案内ボタンを隠す */
@@ -376,7 +378,7 @@ button:hover {
         color: #000;
     }
     
-    /* オプションや図鑑モーダルの幅調整 */
+    /* モーダルの幅調整 */
     .panel-box {
         width: 90% !important;
     }
