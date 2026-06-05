@@ -267,6 +267,7 @@ function startGameMode(mode) {
     document.getElementById('startMenu').style.display = 'none';
     document.getElementById('gameContainer').style.display = 'flex';
     document.getElementById('controlButtons').style.display = 'flex';
+    document.getElementById('mobileControls').style.display = 'flex';
     document.body.classList.add('is-playing');
     
     const pTools = document.getElementById('practiceTools');
@@ -293,6 +294,7 @@ function backToMenu() {
     document.getElementById('gameContainer').style.display = 'none';
     document.getElementById('controlButtons').style.display = 'none';
     document.getElementById('gameOverOverlay').style.display = 'none';
+    document.getElementById('mobileControls').style.display = 'none';
     document.body.classList.remove('is-playing');
 }
 
