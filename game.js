@@ -141,15 +141,15 @@ const SHAPES = {
 
 const COLORS = [
     null, 
-    'oklch(0.8 0.16 210)', 'oklch(0.9 0.16 100)', 'oklch(0.7 0.18 310)',
-    'oklch(0.75 0.18 150)', 'oklch(0.65 0.2 25)', 'oklch(0.7 0.2 250)',
-    'oklch(0.8 0.16 75)', 'oklch(0.5 0.2 30)', 'oklch(0.65 0.2 100)',
-    'oklch(0.55 0.2 210)', 'oklch(0.6 0.2 350)', 'oklch(0.55 0.2 165)',
-    'oklch(0.55 0.2 300)', 'oklch(0.80 0.07 100)', 'oklch(0.75 0.08 250)',
-    'oklch(0.8 0.12 150)', 'oklch(0.80 0.10 30)', 'oklch(0.5 0.025 250)',
-    'oklch(0.5 0.05 75)', 'oklch(0.5 0.05 150)', 'oklch(0.5 0.05 0)',
-    'oklch(0.8 0.2 350)', 'oklch(0.7 0.2 40)', 'oklch(0.75 0.16 170)',
-    'oklch(0.8 0.2 125)',  '#004060' 
+    'oklch(80% 0.20 220)', 'oklch(80% 0.20 110)', 'oklch(67% 0.20 310)',
+    'oklch(80% 0.24 150)', 'oklch(67% 0.24 25)', 'oklch(67% 0.24 260)',
+    'oklch(80% 0.20 50)', 'oklch(80% 0.18 170)', 'oklch(55% 0.24 290)',
+    'oklch(80% 0.20 0)', 'oklch(80% 0.20 120)', 'oklch(90% 0.18 80)',
+    'oklch(40% 0.10 200)', 'oklch(95% 0.125 100)', 'oklch(88% 0.125 260)',
+    'oklch(88% 0.125 150)', 'oklch(88% 0.125 0)', 'oklch(0.4 0.2 250)',
+    'oklch(0.4 0.2 80)', 'oklch(0.4 0.2 120)', 'oklch(0.4 0.2 0)',
+    'oklch(68% 0.1 90)', 'oklch(45% 0.02 250)', 'oklch(0.70 0.1 40)',
+    'oklch(0.80 0.03 200)',  '#004060' 
 ];
 
 const PENTAMINOS = [
@@ -1721,25 +1721,50 @@ function buildPairLibrary() {
 // ========================================================================
 // ■ スマートフォン向け タッチ操作（バーチャルパッド）連携
 // ========================================================================
-const bindTouch = (id, callback) => {
+const bindTouch = (id, callback, repeat = false) => {
     const btn = document.getElementById(id);
-    if (btn) {
-        // clickよりも反応が早いtouchstartを使用
-        btn.addEventListener('touchstart', (e) => {
-            e.preventDefault(); // ボタン押下時のスクロールやズームを防止
-            callback();
-        }, { passive: false });
-    }
+    if (!btn) return;
+
+    let timeoutId = null;
+    let intervalId = null;
+
+    const startAction = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        
+        // 既存のタイマーをクリア
+        clearTimeout(timeoutId);
+        clearInterval(intervalId);
+
+        // 押した瞬間に1回実行
+        callback();
+
+        // 長押し対応の場合、一定時間（150ms）経過後に連続実行（50ms間隔）を開始
+        if (repeat) {
+            timeoutId = setTimeout(() => {
+                intervalId = setInterval(callback, 50);
+            }, 150);
+        }
+    };
+
+    const stopAction = (e) => {
+        if (e && e.cancelable) e.preventDefault();
+        clearTimeout(timeoutId);
+        clearInterval(intervalId);
+    };
+
+    btn.addEventListener('touchstart', startAction, { passive: false });
+    btn.addEventListener('touchend', stopAction, { passive: false });
+    btn.addEventListener('touchcancel', stopAction, { passive: false });
 };
 
-// 各ボタンに関数を割り当て
-bindTouch('vBtnLeft', () => playerMove(-1));
-bindTouch('vBtnRight', () => playerMove(1));
-bindTouch('vBtnDown', () => playerDrop());
-bindTouch('vBtnRotL', () => playerRotate(-1));
-bindTouch('vBtnRotR', () => playerRotate(1));
-bindTouch('vBtnHold', () => playerHold());
-bindTouch('vBtnBomb', () => { if (typeof useBomb === 'function') useBomb(); });
+// 各ボタンに関数を割り当て（第3引数を true にすると長押し連続入力が有効になる）
+bindTouch('vBtnLeft', () => playerMove(-1), true);  // 長押し対応
+bindTouch('vBtnRight', () => playerMove(1), true); // 長押し対応
+bindTouch('vBtnDown', () => playerDrop(), true);   // 長押し対応（ソフトドロップ）
+bindTouch('vBtnRotL', () => playerRotate(-1), false);
+bindTouch('vBtnRotR', () => playerRotate(1), false);
+bindTouch('vBtnHold', () => playerHold(), false);
+bindTouch('vBtnBomb', () => { if (typeof useBomb === 'function') useBomb(); }, false);
 
 // ハードドロップ（一気に下まで落とす）処理
 bindTouch('vBtnUp', () => {
@@ -1749,9 +1774,8 @@ bindTouch('vBtnUp', () => {
     }
     player.pos.y--; // 衝突した1個上に戻す
     player.lastAction = 'move';
-    // 落下後、即座にロック（固定）処理へ移行するための関数を呼ぶか、タイマーをゼロにする
-    lockDelayCounter = 1000; // 既存のロック遅延を即座に満了させる
-});
+    lockDelayCounter = 1000; // ロック遅延を即座に満了させる
+}, false);
 
 // ========================================================================
 // ■ プラクティスモードのキャンバスタッチ対応
@@ -1774,8 +1798,7 @@ canvas.addEventListener('touchstart', event => {
     const row = Math.floor(clientY / BLOCK_SIZE);
     
     if (col >= 0 && col < COLS && row >= 0 && row < ROWS) {
-        // 現在のブロックを消すか、選択中のブロックを置くかの処理（既存のmousedownと同等）
-        arena[row][col] = (arena[row][col] === 0) ? 1 : 0; // 例: 簡易的なトグル
+        arena[row][col] = (arena[row][col] === 0) ? 1 : 0; 
         draw();
     }
 }, { passive: false });
